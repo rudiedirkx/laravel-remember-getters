@@ -2,6 +2,8 @@
 
 namespace rdx\remgets;
 
+use Illuminate\Support\Str;
+
 trait RemembersAttributes {
 
 	protected $_remembered = [];
@@ -23,7 +25,7 @@ trait RemembersAttributes {
 
 
 	public function canGetRememberValue($name) {
-		return $this->hasRememberedAttribute($key) || $this->hasRememberableAttribute($key);
+		return $this->hasRememberedAttribute($name) || $this->hasRememberableAttribute($name);
 	}
 
 	public function getRememberValue($name) {
@@ -40,8 +42,13 @@ trait RemembersAttributes {
 		return array_key_exists($name, $this->_remembered);
 	}
 
+	public function getRememberedAttribute($name) {
+		return $this->_remembered[$name];
+	}
+
 	public function rememberAttribute($name, $value) {
 		$this->_remembered[$name] = $value;
+		return $value;
 	}
 
 	public function forgetRememberedAttribute($name) {
@@ -57,7 +64,7 @@ trait RemembersAttributes {
 	}
 
 	public function getRememberableAttribute($name) {
-		return call_user_func([$this, 'remember' . Str::studly($name) . 'Attribute']);
+		return $this->rememberAttribute($name, call_user_func([$this, 'remember' . Str::studly($name) . 'Attribute']));
 	}
 
 }
